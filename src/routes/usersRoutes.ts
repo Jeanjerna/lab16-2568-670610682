@@ -3,22 +3,80 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 dotenv.config();
 
-import type { User, CustomRequest } from "../libs/types.js";
+import type { User, CustomRequest, UserPayload } from "../libs/types.js";
 
 // import database
 import { users, reset_users } from "../db/db.js";
-import { success } from "zod";
+import { zStudentId } from "../libs/zodValidators.js";
+
+import { authenticateToken } from "../middlewares/authenMiddleware.js";
+import { checkRoleAdmin } from "../middlewares/checkRoleAdminMiddleware.js";
 
 const router = Router();
 
 // GET /api/v2/users
-router.get("/", (req: Request, res: Response) => {
+router.get("/", authenticateToken, checkRoleAdmin, (req: CustomRequest, res: Response) => {
   try {
-    // return all users
-    return res.json({
+    // // get authorization header
+    // const authHeader = req.headers["authorization"];
+    // console.log(authHeader);
+
+    // // if authHeader is not found or wrong format
+    // if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    //   return res.status(401).json({
+    //     success: false,
+    //     message: "Authorization header is not found",
+    //   });
+    // }
+
+    // // extrct token
+    // const token = authHeader?.split(" ")[1];
+
+    // // check if token is not found
+    // if (!token) {
+    //   return res.status(401).json({
+    //     success: false,
+    //     message: "Token is not required",
+    //   });
+    // }
+
+    // try {
+    //   const jwt_secret = process.env.JWT_SECRET || "forgot_secret";
+    //   jwt.verify(token, jwt_secret, (err, payload) => {
+    //     if (err) {
+    //       return res.status(403).json({
+    //         success: false,
+    //         message: "Invalid or expired token",
+    //       });
+    //     }
+
+    // console.log(req.token);
+
+    // const payload = req.user;
+
+    // const user = users.find(
+    //   (u: User) => u.username === (payload as UserPayload).username
+    // );
+
+    // if (!user || user.role !== "ADMIN") {
+    //   return res.status(401).json({
+    //     success: false,
+    //     message: "Unauthorized user",
+    //   });
+    // }
+
+    return res.status(200).json({
       success: true,
-      data: users,
+      message: "Success",
+      users,
     });
+    //   });
+    // } catch (err) {
+    //   return res.status(403).json({
+    //     success: false,
+    //     message: "Invalid or expired token",
+    //   });
+    // }
   } catch (err) {
     return res.status(200).json({
       success: false,
@@ -38,7 +96,7 @@ router.post("/login", (req: Request, res: Response) => {
     );
 
     // 2. check if user exists (search with username & password in DB)
-    if(!user) {
+    if (!user) {
       return res.status(401).json({
         success: false,
         message: "Invalid username or password",
@@ -48,19 +106,22 @@ router.post("/login", (req: Request, res: Response) => {
     // 3. create JWT token (with user info object as payload) using JWT_SECRET_KEY
     //    (optional: save the token as part of User data)
     const jwt_secret = process.env.JWT_SECRET || "forgot_secret";
-    const token = jwt.sign({
-        username : user.username,
-        studentId : user.studentId,
-        role : user.role,
-    }, jwt_secret, { expiresIn: "5m" });
+    const token = jwt.sign(
+      {
+        username: user.username,
+        studentId: user.studentId,
+        role: user.role,
+      },
+      jwt_secret,
+      { expiresIn: "5m" }
+    );
 
     // 4. send HTTP response with JWT token
     res.status(200).json({
       success: true,
       message: "Login successful",
-      token
-    })
-
+      token,
+    });
   } catch (err) {
     return res.status(500).json({
       success: false,
