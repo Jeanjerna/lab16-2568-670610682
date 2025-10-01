@@ -10,6 +10,7 @@ import studentRouter_v2 from "./routes/studentsRoutes_v2.js";
 import studentRouter_v3 from "./routes/studentsRoutes_v3.js";
 import courseRouter_v2 from "./routes/coursesRouters_v2.js";
 import usersRoutes from "./routes/usersRoutes.js";
+import enrollmentRouters from "./routes/enrollmentRouters.js";
 
 const app = express();
 const port = 3000;
@@ -47,6 +48,7 @@ app.use("/api/v2/students", studentRouter_v2);
 app.use("/api/v3/students", studentRouter_v3);
 app.use("/api/v2/courses", courseRouter_v2);
 app.use("/api/v2/users", usersRoutes);
+app.use("/api/v2/enrollments", enrollmentRouters);
 
 // endpoint check middleware
 app.use(notFoundMiddleware);

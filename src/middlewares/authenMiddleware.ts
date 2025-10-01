@@ -36,7 +36,7 @@ export const authenticateToken = (
   try {
     // 3. verify token using JWT_SECRET_KEY and
     //    get payload "user" = { username, studentId, role }
-    const jwt_secret = process.env.JWT_SECRET || "this_is_my_secret";
+    const jwt_secret = process.env.JWT_SECRET || "forgot_secret";
     jwt.verify(token, jwt_secret, (err, user) => {
       if (err)
         return res.status(403).json({
