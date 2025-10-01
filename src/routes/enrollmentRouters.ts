@@ -203,7 +203,7 @@ router.delete(
         });
       }
 
-      if (req.user?.role === "ADMIN" && req.user?.studentId !== studentId) {
+      if (req.user?.role === "ADMIN" || req.user?.studentId !== studentId) {
         return res.status(403).json({
           success: false,
           message: "You are not allowed to modify another student's data",
