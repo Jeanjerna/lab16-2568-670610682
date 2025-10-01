@@ -210,30 +210,30 @@ router.delete(
         });
       }
 
-      const foundIndex = enrollments.findIndex(
+      const foundIndex_enrollment = enrollments.findIndex(
         (e: Enrollment) =>
           e.studentId === studentId && e.courseId === body.courseId
       );
-      if (foundIndex === -1) {
+      if (foundIndex_enrollment === -1) {
         return res.status(404).json({
           success: false,
           message: "Enrollment does not exists",
         });
       }
 
-      enrollments.splice(foundIndex, 1);
+      enrollments.splice(foundIndex_enrollment, 1);
 
-      const foundIndex2 = students.findIndex(
+      const foundIndex_student = students.findIndex(
         (s: Student) => s.studentId === studentId
       );
-      if (foundIndex2 === -1) {
+      if (foundIndex_student === -1) {
         return res.status(404).json({
           success: false,
           message: "Student does not exists",
         });
       }
       const foundIndex3 =
-        students[foundIndex2]?.courses?.findIndex(
+        students[foundIndex_student]?.courses?.findIndex(
           (c: string) => c === body.courseId
         ) || -1;
       if (foundIndex3 === -1) {
@@ -243,7 +243,7 @@ router.delete(
         });
       }
 
-      students[foundIndex2]?.courses?.splice(foundIndex3, 1);
+      students[foundIndex_student]?.courses?.splice(foundIndex3, 1);
 
       return res.status(200).json({
         success: true,
